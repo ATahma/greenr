@@ -30,23 +30,22 @@ var goals = []
 const app = dialogflow({debug: true});
 
 
-
 // Handle the Dialogflow intent named 'favorite color'.
 // The intent collects a parameter named 'color'.
-app.intent('favorite color', (conv, {color}) => {
-  const luckyNumber = color.length;
-  const audioSound = 'https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg';
+app.intent('favorite color', (conv, {task}) => {
+  const taskName = task;
+  const audioSound = 'https://actions.google.com/sounds/v1/water/air_woosh_underwater.ogg';
   if (conv.data.userName) {
     // If we collected user name previously, address them by name and use SSML
     // to embed an audio snippet in the response.
     conv.ask(`<speak>${conv.data.userName}, your lucky number is ` +
       `${luckyNumber}.<audio src="${audioSound}"></audio> ` +
-      `Would you like to hear some fake colors?</speak>`);
+      `Just say repeat if you wanna hear me again </speak>`);
     conv.ask(new Suggestions('Yes', 'No'));
   } else {
     conv.ask(`<speak>Your lucky number is ${luckyNumber}.` +
       `<audio src="${audioSound}"></audio> ` +
-      `Would you like to hear some fake colors?</speak>`);
+      `Just say repeat if you wanna hear me again </speak>`);
     conv.ask(new Suggestions('Yes', 'No'));
   }
 });
@@ -56,12 +55,18 @@ app.intent('favorite color', (conv, {color}) => {
 // agreed to PERMISSION prompt, then boolean value 'permissionGranted' is true.
 app.intent('actions_intent_PERMISSION', (conv, params, permissionGranted) => {
   if (!permissionGranted) {
-    conv.ask(`Ok, no worries. What's your favorite color?`);
-    conv.ask(new Suggestions('Blue', 'Red', 'Green'));
+    conv.ask(`Ok, no worries. What would you like to do?`);
+    conv.ask(new Suggestions('Goal of the day',
+            'new tip',
+            'my carbon footprint',
+            'my progress'));
   } else {
     conv.data.userName = conv.user.name.display;
-    conv.ask(`Thanks, ${conv.data.userName}. What's your favorite color?`);
-    conv.ask(new Suggestions('Blue', 'Red', 'Green'));
+    conv.ask(`Thanks, ${conv.data.userName}. What would you like to do?`);
+    conv.ask(new Suggestions('Goal of the day',
+            'new tip',
+            'my carbon footprint',
+            'my progress'));
   }
 });
 
@@ -72,6 +77,9 @@ app.intent('Default Welcome Intent', (conv) => {
     context: 'Hi there, to get to know you better',
     permissions: 'NAME'
   }));
+  conv.ask('Hello! Welcome to Greenr, your virtual assistant to become greener!',
+          "I'm packed with tips and information on how to be more " ,
+           "environemntally friendly!")
 });
 
 // Define a mapping of fake color strings to basic card objects.
